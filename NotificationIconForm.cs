@@ -30,15 +30,16 @@ namespace SolSoft.SleepControl
 				m_viewModel.ToggleIdleOverrideCommand.CanExecuteChanged -= ToggleIdleOverride_CanExecuteChanged;
 			}
 
+			m_viewModel = viewModel;
 			if (viewModel != null)
 			{
-				m_viewModel = viewModel;
 				m_viewModel.PropertyChanged += viewModel_PropertyChanged;
 				m_viewModel.ToggleAwayModeEnabledCommand.CanExecuteChanged += ToggleAwayModeEnabled_CanExecuteChanged;
 				m_viewModel.ToggleAwayModeSleepOverrideCommand.CanExecuteChanged += ToggleAwayModeSleepOverride_CanExecuteChanged;
 				m_viewModel.ToggleIdleOverrideCommand.CanExecuteChanged += ToggleIdleOverride_CanExecuteChanged;
 
-				SyncModel(null);
+				//update all UI states
+				SyncUIWithModel(null);
 			}
 
 			contextMenuStrip.Enabled = (m_viewModel != null);
@@ -46,25 +47,26 @@ namespace SolSoft.SleepControl
 
 		private void ToggleIdleOverride_CanExecuteChanged(object sender, EventArgs e)
 		{
-			SyncModel(nameof(m_viewModel.ToggleIdleOverrideCommand));
+			SyncUIWithModel(nameof(m_viewModel.ToggleIdleOverrideCommand));
 		}
 
 		private void ToggleAwayModeSleepOverride_CanExecuteChanged(object sender, EventArgs e)
 		{
-			SyncModel(nameof(m_viewModel.ToggleAwayModeSleepOverrideCommand));
+			SyncUIWithModel(nameof(m_viewModel.ToggleAwayModeSleepOverrideCommand));
 		}
 
 		private void ToggleAwayModeEnabled_CanExecuteChanged(object sender, EventArgs e)
 		{
-			SyncModel(nameof(m_viewModel.ToggleAwayModeEnabledCommand));
+			SyncUIWithModel(nameof(m_viewModel.ToggleAwayModeEnabledCommand));
 		}
 
 		private void viewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			SyncModel(e.PropertyName);
+			SyncUIWithModel(e.PropertyName);
 		}
 
-		private void SyncModel(string changedPropertyNameOrNullForEverything)
+		//tool strip stuff can't be data-bound, so we effect it ourselves here
+		private void SyncUIWithModel(string changedPropertyNameOrNullForEverything)
 		{
 			if (IsChanged(changedPropertyNameOrNullForEverything, nameof(MainViewModel.IsPluggedIn)))
 			{
@@ -125,12 +127,12 @@ namespace SolSoft.SleepControl
 
 		private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
 		{
-			m_viewModel.RequestShowForm();
+			m_viewModel?.RequestShowForm();
 		}
 
 		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			m_viewModel.RequestExit();
+			m_viewModel?.RequestExit();
 		}
 
 		
